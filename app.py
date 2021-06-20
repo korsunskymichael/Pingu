@@ -1,67 +1,113 @@
 from flask import Flask, redirect, url_for, request, render_template
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, ForeignKey, DateTime
-from datetime import datetime
+from static.python.functions import *
 
 app = Flask(__name__)
-engine = create_engine('sqlite:///messenger.db', echo=True)
-meta = MetaData()
 
-users = Table(
-    'users', meta,
-    Column('username', String(50), primary_key=True),
-    Column('password', String(10))
-)
-
-messages = Table(
-    'messages', meta,
-    Column('message_id', Integer, primary_key=True),
-    Column('sender', String(50), ForeignKey('users.username')),
-    Column('receiver', String(50), ForeignKey('users.username')),
-    Column('subject', String(50)),
-    Column('message', String(250)),
-    Column("creation_date", DateTime, default=datetime.utcnow())
-)
-
-meta.create_all(engine)
-
-#main page
 @app.route('/')
 def index():
     return render_template("/html/index.html")
 
-#user page
-@app.route('/user/<name>')
-def user(name):
-    return render_template('/html/user.html', name = name)
-
-#login page
-@app.route("/login", methods=["GET", "POST"])
+@app.route('/login', methods = ["POST", "GET"])
 def login():
-    error = None
-
-    if request.method == "POST":
-        user = request.form["username"]
-        return redirect(url_for("user", name=user))
-
-    return render_template("/html/login.html", error=error)
-
-# sign up page
-@app.route("/signup", methods=["GET", "POST"])
-def signup():
-    error = None
-
-    if request.method == "POST":
-        user = request.form.username
-        password = request.form.password
-        password_again = request.form.password_again
-        print(password_again)
-        if password == password_again:
-            return redirect(url_for('user', name=user))
+    if  request.method == "POST":
+        user_name = request.form["username"]
+        user_password = request.form["password"]
+        valid_user = check_username(user_name, user_password)
+        if valid_user:
+            return redirect(url_for("user", name = user_name))
         else:
-            error = "Not identical passwords"
-            return redirect(url_for('signup'))
-    return render_template('/html/signup.html', error=error)
+            print("incorrect user or password")
+            return redirect(url_for("login"))
+    return render_template("/html/login.html")
+
+@app.route('/signup', methods = ["POST", "GET"])
+def signup():
+    if request.method == "POST":
+        user_name = request.form['username']
+        user_password = request.form["password"]
+        usernames = get_users()
+
+        if user_name not in usernames:
+            add_user(user_name, user_password)
+            return redirect(url_for("login"))
+        else:
+            print("user name already exist")
+            return redirect(url_for("signup"))
+
+    return render_template('/html/signup.html')
+
+@app.route('/user/<name>', methods = ["POST", "GET"])
+def user(name):
+    usernames = get_users()
+    return render_template('/html/user.html', name=name, usernames=usernames)
+
+@app.route("/write_message/<name>", methods = ["POST", "GET"])
+def write_message(name):
+    message_sender = name
+    message_receiver = request.form["receiver"]
+    message_subject = request.form["subject"]
+    message = request.form["message"]
+    add_message(message_sender, message_receiver, message_subject, message)
+    return redirect(url_for("user", name = name))
+
+
+@app.route('/delete_by_id/<name>', methods = ["POST", "GET"])
+def delete_by_id(name):
+    message_id = request.form["message_id"]
+    delete_message(message_id)
+    return redirect(url_for("user", name=name))
+
+@app.route('/all_messages/<name>', methods = ["POST", "GET"])
+def show_all_messages(name):
+    all_messages = get_messages(name)
+    unread_ids = [message.get("message_id") for message in all_messages if int(message.get("read_message")) == 0]
+    if len(unread_ids) >0:
+        update_read_messages(unread_ids)
+    return render_template('/html/messages.html', name=name, messages=all_messages)
+
+
+@app.route('/unread_messages/<name>', methods = ["POST", "GET"])
+def show_unread_messages(name):
+    unread_messages = get_messages(name)
+    unread_ids = [message.get("message_id") for message in unread_messages if int(message.get("read_message")) == 0]
+    if len(unread_ids) > 0:
+        update_read_messages(unread_ids)
+    return render_template('/html/messages.html', name=name, messages=unread_messages)
+
+@app.route('/latest_message/<name>', methods = ["POST", "GET"])
+def show_latest_message(name):
+    messages = get_messages(name, "latest")
+    latest_message = [messages[0]]
+    if len(latest_message)>0:
+        update_read_messages([latest_message[0].get("message_id")])
+    return render_template('/html/messages.html', name=name, messages=latest_message)
+
 
 if __name__ == '__main__':
+    connection = sqlite3.connect(DATABASE)
+
+    path = 'static/sql/messages_init.sql'
+    q = open(path, 'r').read()
+    cursor = connection.cursor()
+    cursor.execute(q)
+
+    path = 'static/sql/users_init.sql'
+    q = open(path, 'r').read()
+    cursor = connection.cursor()
+    cursor.execute(q)
+
+    path = 'static/sql/insert_messages.sql'
+    q = open(path, 'r').read()
+    cursor = connection.cursor()
+    cursor.execute(q)
+
+    path = 'static/sql/insert_users.sql'
+    q = open(path, 'r').read()
+    cursor = connection.cursor()
+    cursor.execute(q)
+
+    connection.commit()
+    connection.close()
+
     app.run(debug=True)
 

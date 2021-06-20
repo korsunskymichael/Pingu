@@ -1,0 +1,23 @@
+<p>
+    <table id=message_table>
+        <h2>Messages for {{ name }}:</h2>
+
+        <tr>
+            <th>Message id</th>
+            <th>Sender</th>
+            <th>Subject</th>
+            <th>Message</th>
+            <th>Creation date</th>
+        </tr>
+
+        {% for message in messages %}
+        <tr>
+            <td>{{ message.message_id }}</td>
+            <td>{{ message.sender }}</td>
+            <td>{{ message.subject }}</td>
+            <td>{{ message.message}}</td>
+            <td>{{ message.creation_date }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</p>
