@@ -77,11 +77,12 @@ def show_unread_messages(name):
 
 @app.route('/latest_message/<name>', methods = ["POST", "GET"])
 def show_latest_message(name):
+    latest_message =[]
     messages = get_messages(name, "latest")
     if len(messages) > 0:
         latest_message = [messages[0]]
         update_read_messages(tuple([latest_message[0].get("message_id")]))
-        return render_template('/html/messages.html', name=name, messages=latest_message)
+    return render_template('/html/messages.html', name=name, messages=latest_message)
 
 
 if __name__ == '__main__':
