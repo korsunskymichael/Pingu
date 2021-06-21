@@ -61,8 +61,9 @@ def delete_by_id(name):
 def show_all_messages(name):
     all_messages = get_messages(name)
     unread_ids = [message.get("message_id") for message in all_messages if int(message.get("read_message")) == 0]
+    print(len(unread_ids))
     if len(unread_ids) >0:
-        update_read_messages(unread_ids)
+        update_read_messages(tuple(unread_ids))
     return render_template('/html/messages.html', name=name, messages=all_messages)
 
 
@@ -71,7 +72,7 @@ def show_unread_messages(name):
     unread_messages = get_messages(name)
     unread_ids = [message.get("message_id") for message in unread_messages if int(message.get("read_message")) == 0]
     if len(unread_ids) > 0:
-        update_read_messages(unread_ids)
+        update_read_messages(tuple(unread_ids))
     return render_template('/html/messages.html', name=name, messages=unread_messages)
 
 @app.route('/latest_message/<name>', methods = ["POST", "GET"])
@@ -79,7 +80,7 @@ def show_latest_message(name):
     messages = get_messages(name, "latest")
     latest_message = [messages[0]]
     if len(latest_message)>0:
-        update_read_messages([latest_message[0].get("message_id")])
+        update_read_messages(tuple([latest_message[0].get("message_id")]))
     return render_template('/html/messages.html', name=name, messages=latest_message)
 
 
