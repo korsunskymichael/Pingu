@@ -1,68 +1,73 @@
-<html>
-<body>
-    <h1> Welcome {{name}} !</h1>
-    <br>
-    <br>
-    <p>
-        <h2>Write a message:</h2>
-        <form id="write" action="/write_message/{{ name }}" method="POST">
-            <label for="receiver">Receiver:</label>
-            <br>
-            <select id="receiver" name="receiver">
-                {% for username in usernames %}
-                    <option value="{{ username }}">{{ username }}</option>
-                {% endfor %}
-            </select>
-            <br>
-            <br>
-            <label>Subject:</label>
-            <br>
-            <textarea type="text" name="subject" placeholder="Add subject" style="width:280px"></textarea>
-            <br>
-            <br>
-            <label>Message:</label>
-            <br>
-            <textarea type="text" name="message" placeholder="Add message" style="width:280px"></textarea>
-            <br>
-            <input class="submit-button" type="submit" value="Submit">
-        </form>
-    </p>
-    <br>
-    <br>
-    <p>
-        <h2>Delete by message id:</h2>
-        <form id="delete_by_id" action="/delete_by_id/{{ name }}" method="POST">
-            <label>ID:</label>
-            <input type="text" name="message_id" placeholder="Add Message ID"></input>
-            <br>
-            <br>
-            <input type="submit" class="submit-button" value="Submit">
-        </form>
-    </p>
-    <br>
-    <br>
-    <p>
-        <h2>All messages:</h2>
-        <form id="all_messages" action="/all_messages/{{ name }}" method="POST">
-            <input type="submit" class="submit-button" value="Submit">
-        </form>
-    </p>
-    <br>
-    <br>
-    <p>
-        <h2>Unread messages:</h2>
-        <form id="unread_messages" action="/unread_messages/{{ name }}" method="POST">
-            <input type="submit" class="submit-button" value="Submit">
-        </form>
-    </p>
-    <br>
-    <br>
-    <p>
-        <h2>Latest message:</h2>
-        <form id="latest_message" action="/latest_message/{{ name }}" method="POST">
-            <input type="submit" class="submit-button" value="Submit">
-        </form>
-    </p>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>User's page</title>
+    </head>
+    <body>
+        <h1> Welcome {{name}} !</h1>
+        <br>
+        <br>
+        <p>
+            <h2>Write a message:</h2>
+            <form id="write" action="/write_message/{{ name }}" method="POST">
+                <label for="receiver">Receiver:</label>
+                <br>
+                <select id="receiver" name="receiver">
+                    {% for username in usernames %}
+                        <option value="{{ username }}">{{ username }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+                <br>
+                <label>Subject:</label>
+                <br>
+                <textarea type="text" name="subject" placeholder="Add subject" style="width:280px"></textarea>
+                <br>
+                <br>
+                <label>Message:</label>
+                <br>
+                <textarea type="text" name="message" placeholder="Add message" style="width:280px"></textarea>
+                <br>
+                <input class="submit-button" type="submit" value="Submit">
+            </form>
+        </p>
+        <br>
+        <br>
+        <p>
+            <h2>Delete by message id:</h2>
+            <form id="delete_by_id" action="/delete_by_id/{{ name }}" method="POST">
+                <label>ID:</label>
+                <input type="text" name="message_id" placeholder="Add Message ID"></input>
+                <br>
+                <br>
+                <input type="submit" class="submit-button" value="Submit">
+            </form>
+        </p>
+        <br>
+        <br>
+        <p>
+            <h2>All messages:</h2>
+            <form id="all_messages" action="/all_messages/{{ name }}" method="POST">
+                <input type="submit" class="submit-button" value="Submit">
+            </form>
+        </p>
+        <br>
+        <br>
+        <p>
+            <h2>Unread messages:</h2>
+            <form id="unread_messages" action="/unread_messages/{{ name }}" method="POST">
+                <input type="submit" class="submit-button" value="Submit">
+            </form>
+        </p>
+        <br>
+        <br>
+        <p>
+            <h2>Latest message:</h2>
+            <form id="latest_message" action="/latest_message/{{ name }}" method="POST">
+                <input type="submit" class="submit-button" value="Submit">
+            </form>
+        </p>
 
-</body>
+    </body>
 </html>

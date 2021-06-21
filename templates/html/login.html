@@ -1,6 +1,10 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Log in</title>
+    </head>
     <body>
-
         <h1>Please login</h1>
         <br>
         <form action="/login" method="POST">
@@ -8,6 +12,5 @@
             <input type="password" placeholder="Password" name="password" value="{{request.form.password }}">
             <input class="btn btn-default" type="submit" value="Login">
         </form>
-
     </body>
 </html>
